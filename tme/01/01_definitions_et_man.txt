@@ -1,0 +1,315 @@
+
+////////////////////////////////////////////////////////////////////////
+					1:Ligne de commande - mode interactif
+////////////////////////////////////////////////////////////////////////
+
+1.1: terminologie
+
+interpréteur de commandes:
+	programme qui dispose son propre langage et dont le but de traduire des instructions en comportement.
+	ex: bash, sh, zsh, ksh, ...
+
+terminal:
+	programme / interface qui nous permettra d'ineragir avec l'interpréteur de commande
+	ex: xTerm, ...
+
+commande:
+	instruction saisie par l'utilisateur et interprété par l'interpréteur de comandes
+
+shell:
+	synonyme de terminal
+
+prompt:
+	ligne affichée juste avant la saisie, et est personnalisable
+	On peut différencier si l'utilisateur est root ou pas, avec respectivement les symoboles # et $
+
+invite de commandes:
+	endroit de saisie des instructions / commande, vient juste après le prompt
+
+home / homedirectory:
+	le dossier principal d'un utilisateur
+
+root:
+	utilisateur ayant les droits les plus élevés
+
+utilisateur:
+	tout autre compte personnel
+
+login:
+	un identifiant unique d'authentification
+
+racine:
+	c'est le "/", point d'entrée du système de fichier, accessible de tous les utilisateurs ayant assez de droits
+
+complétion:
+	c'est le "tab", il permet de demander une complétion autoumatique à la suite d'une saisie (dans le shell) 
+
+wildcard:
+	c'est le "*" (joker), caractère spécial signifiant "toutes chaines de caractères", expansé par le shell au moment de l'exécution de la commande. 
+	ex:*
+
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+
+1.2: man
+
+1.2.1:
+man man:
+	le manuel du manuel, parle principalement de l'utilisation des commandes
+
+----------------------------------------------------------------------
+
+1.2.3: ls
+
+1)
+la commande ls sert à lister le contenu d'un répertoire.
+
+2)
+l'option -a, --all
+
+3)
+l'option -l
+
+4)
+l'option -h, --human-readable
+
+5)
+l'option -R, --recursive
+
+ls /u*
+
+----------------------------------------------------------------------
+
+1.2.4: cd
+
+1)
+la commande cd sert a changer de dossier
+
+cd /tmp && ls
+
+cd ~/
+
+"cd -": permet de revenir à l'emplacement précédent
+
+"cd": permet d'aller dans le répertoire pointé par la variable CDPATH
+cdspell
+
+----------------------------------------------------------------------
+
+1.2.5: mkdir
+l'option -p sert à créer les répertoires manquants mais qui y sont présent dans la chaîne.
+
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+
+1.3: echo
+sert à afficher une chaine de caractères et éventuellement remplacer le contenu de certaines variables.
+
+l'option -n sert à indiquer de ne pas effectuer le saut de ligne à la fin
+l'option -e sert à indiquer qu'il faut interpréter les caractères spécifiés par le backslash.
+ex: \n, \t
+
+"": les éléments reconnus par l'interpréteur de commandes seront interprétés
+'': les éléments reconnus par l'interpréteur de commandes ne seront pas interprétés
+
+
+
+////////////////////////////////////////////////////////////////////////
+					2: redirections
+////////////////////////////////////////////////////////////////////////
+
+2.1: preières redirections
+> sert a écrire depuis le début du fichier
+>> sert a écrire à partir de la fin du fichier
+
+>>> | here 		(voir sur
+<<< | Document	google)
+
+/dev/null: on a monté sur ce point de montage un système de fichier qui refuse l'écriture
+
+1: stdout
+2: stderr
+
+	ls & > file
+		> &
+	ls > file 2 > &1
+
+
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+
+
+2.2: pipe
+cat - Concaténer des fichiers et les afficher sur la sortie standard
+
+la ligne est dupliquée car aucun argument n'est passé à cat donc cat lit sur l'entrée standard
+
+----------------------------------------------------------------------
+
+2.2.2:
+grep - permet de rechercher un motif dans un fichier, qui les deux sont donnés en argument
+
+l'option -v, --invert-match sert à indiquer à grep de tout sélectionner sauf le motif
+
+ps aux | grep -v ^root | grep root
+
+
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+
+
+2.3:
+cat <<eob
+on va lire sur l'entrée standard tant qu'on ne rencontre pas eof (qui est dans ce cas EOF)
+
+
+////////////////////////////////////////////////////////////////////////
+					3: gestion de processus
+////////////////////////////////////////////////////////////////////////
+
+3.3:
+les deux processus font leur affichge en parallèle
+
+----------------------------------------------------------------------
+
+3.5:
+les processus restants sont:
+firefox et emacs (lancé en deuxième)
+
+----------------------------------------------------------------------
+
+3.6.1:
+cat /etc/passwd | grep "root" > /dev/null && echo "root existe" || echo "root n'existe pas"
+
+méthode en utilisant une alternative
+cat /etc/passwd | if ! [ -z `grep "root"` ] ; then echo "root existe"; else echo "root n'existe pas"; fi
+
+----------------------------------------------------------------------
+
+3.6.2:
+corrigé:
+ps aux | grep -v grep | grep firefox > /dev/null && echo "firefox est en cours d'execution" || echo "pas de firefox actuellement"
+
+solution fonctionne mais avec erreur de bash et test
+if ! [ -z `ps aux | grep "firefox"` ] ; then echo "firefox est en cours d'execution"; else echo "pas de firefox actuellement"; fi
+
+
+
+////////////////////////////////////////////////////////////////////////
+					4: Le système d'exploitation GNU/Linux
+////////////////////////////////////////////////////////////////////////
+
+
+4.2:
+ls -ld $HOME/../ | grep "3300901" -> drwx------
+id -> 3300901
+id login-voisin -> ...
+
+r=4
+w=2
+x=1
+chmod ugo+rwx ...
+
+rwx------: chmod 700; chmod go-rx
+rwxr-x---: chmod 750; chmod g+rx o-rx
+
+
+
+////////////////////////////////////////////////////////////////////////
+					5: Les variables
+////////////////////////////////////////////////////////////////////////
+
+5.4:
+1)
+$HOME : chemin absolu vers le répertoire de l'utilisateur
+$PWD : chemin absolu vers le répertoire courant
+$PATH : liste des chemins absolus vers les répertoires contenant les exécutables
+PS1 : le prompt
+
+
+////////////////////////////////////////////////////////////////////////
+					6: Les scripts
+////////////////////////////////////////////////////////////////////////
+
+
+6.1.1:
+
+if [ -d "/var/log" ] ; then
+	echo "répertoire /var/log trouvé"
+elif [ -d "/var/lOg" ] ; then
+	echo "répertoire /var/logs trouvé"
+else
+	echo "aucun répertoire trouvé"
+fi
+
+----------------------------------------------------------------------
+
+6.1.2:
+
+for var in a b c d ; do
+	echo $var;
+done
+
+
+----------------------------------------------------------------------
+
+6.1.3:
+while read a ; do echo $a; done
+cette instruction effectue indefiniment une demande de saisie à l'utilisateur ensuite l'affichage de cette saisie 
+
+----------------------------------------------------------------------
+
+6.2:
+for i in ${1 .. 254} ; do
+	ping -c1 -w1 x.y.z.$i > dev/null && echo $i
+done
+
+----------------------------------------------------------------------
+
+6.3:
+#!/bin/bash
+for elem in $@ ; do
+	if ! [ -f $elem ] ; then
+		echo "${elem} n'est pas un fichier";
+	else
+		mv $elem $HOME/.trash
+	fi
+done
+
+autre solution
+#!/bin/bash
+[ -d ~/.trash ] || mkdir $HOME/.trash
+for i in $* ; do
+	if [ -e $i ] ; then
+		mv $i $HOME/.trash
+	else
+		echo "$i non trouvé";
+	fi
+done
+
+
+////////////////////////////////////////////////////////////////////////
+	7 - Gestion des utilisateurs, des groupes et des mots de passe
+////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////
+					Ouverture
+////////////////////////////////////////////////////////////////////////
+
+var2 = ${var1:-default} -> affectation valeur par défaut si var1 non défini
+var2 = ${var1:+comportement} -> affectation comportement si var défini
+var2 = ${var1:?err-msg} -> pour affichage msg err si var1 non défini
+var2 = ${#var1} -> pour obtenir la taille de var1
+
+chaine de caratères:
+ex: str = toto.titi.txt
+${str # pattern}	*. = titi.txt
+	  ##			*. = txt
+	  %				.* = toto.titi
+	  %%			.* = toto
+
